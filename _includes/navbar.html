@@ -2,16 +2,16 @@
 <div class="nav-backdrop" aria-hidden="true">
             <div class="nav-glass-blur"></div>
         </div>
-        <a class="logo hover-target" href="/" style="text-decoration:none;">
+        <a class="logo hover-target" href="{{ '/' | relative_url }}" style="text-decoration:none;">
             <img src="{{ '/assets/logo/ssic-logo.png' | relative_url }}" alt="SSIC - Societatea Studenților în Inginerie Chimică și Biotehnologii">
         </a>
         <ul class="nav-links" id="navLinks">
-            <li><a class="nav-link hover-target{% if page.view == 'home' %} active{% endif %}" data-target="home" href="/">Acasă</a></li>
-            <li><a class="nav-link hover-target{% if page.view == 'evenimente' %} active{% endif %}" data-target="evenimente" href="/evenimente/">Evenimente</a></li>
-            <li><a class="nav-link hover-target{% if page.view == 'board' %} active{% endif %}" data-target="board" href="/board/">Board</a></li>
-            <li><a class="nav-link hover-target{% if page.view == 'facultate' %} active{% endif %}" data-target="facultate" href="/facultate/">Facultate</a></li>
-            <li><a class="nav-link hover-target{% if page.view == 'studenti' %} active{% endif %}" data-target="studenti" href="/studenti/">Studenți</a></li>
-            <li><a class="nav-link hover-target{% if page.view == 'gallery' %} active{% endif %}" data-target="gallery" href="/gallery/">Galerie</a></li>
+            <li><a class="nav-link hover-target{% if page.view == 'home' %} active{% endif %}" data-target="home" href="{{ '/' | relative_url }}">Acasă</a></li>
+            <li><a class="nav-link hover-target{% if page.view == 'evenimente' %} active{% endif %}" data-target="evenimente" href="{{ '/evenimente/' | relative_url }}">Evenimente</a></li>
+            <li><a class="nav-link hover-target{% if page.view == 'board' %} active{% endif %}" data-target="board" href="{{ '/board/' | relative_url }}">Board</a></li>
+            <li><a class="nav-link hover-target{% if page.view == 'facultate' %} active{% endif %}" data-target="facultate" href="{{ '/facultate/' | relative_url }}">Facultate</a></li>
+            <li><a class="nav-link hover-target{% if page.view == 'studenti' %} active{% endif %}" data-target="studenti" href="{{ '/studenti/' | relative_url }}">Studenți</a></li>
+            <li><a class="nav-link hover-target{% if page.view == 'gallery' %} active{% endif %}" data-target="gallery" href="{{ '/gallery/' | relative_url }}">Galerie</a></li>
         </ul>
         <div class="nav-right">
             <button class="nav-search-btn hover-target" id="navSearchBtn" aria-label="Caută în site" aria-haspopup="dialog" aria-expanded="false" aria-controls="searchOverlay">

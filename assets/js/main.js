@@ -1,3 +1,6 @@
+// Base URL for GitHub Pages compatibility
+var baseUrl = document.documentElement.dataset.baseurl || '';
+
 /* ==========================================================================
            JS: MODAL CONTACT PERSOANĂ (Decan / Prodecani)
            Date preluate manual de pe chimie.upb.ro/administratie/conducerea-facultatii
@@ -1175,9 +1178,9 @@ document.addEventListener('DOMContentLoaded', () => {
            server/GitHub Pages. Nu mai există un singur "view" ascuns/arătat prin JS:
            id-ul paginii curente vine direct din front matter-ul paginii Jekyll.
            ========================================================================== */
-        const viewUrls = { home: '/', evenimente: '/evenimente/', board: '/board/', facultate: '/facultate/', studenti: '/studenti/', gallery: '/gallery/' };
+        const viewUrls = { home: baseUrl + '/', evenimente: baseUrl + '/evenimente/', board: baseUrl + '/board/', facultate: baseUrl + '/facultate/', studenti: baseUrl + '/studenti/', gallery: baseUrl + '/gallery/' };
         const navOrder = ['home', 'evenimente', 'board', 'facultate', 'studenti', 'gallery'];
-        let currentViewId = '{{ page.view }}';
+        let currentViewId = document.documentElement.dataset.view || resolveViewFromPath(location.pathname) || 'home';
         // Verificată LA FIECARE navigare (nu memorată o singură dată la încărcarea paginii):
         // comutatorul de accesibilitate poate fi activat chiar în timpul sesiunii curente,
         // fără reload, deci o constantă calculată o singură dată la parse ar rămâne cu
@@ -1195,8 +1198,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function resolveViewFromPath(pathname) {
-            const clean = (pathname === '' || pathname === '/') ? '/' : (pathname.endsWith('/') ? pathname : pathname + '/');
-            for (const key in viewUrls) { if (viewUrls[key] === clean) return key; }
+            const stripped = baseUrl ? pathname.replace(new RegExp('^' + baseUrl.replace(/\//g, '\\/')), '') : pathname;
+            const clean = (stripped === '' || stripped === '/') ? '/' : (stripped.endsWith('/') ? stripped : stripped + '/');
+            const viewUrlsRaw = { home: '/', evenimente: '/evenimente/', board: '/board/', facultate: '/facultate/', studenti: '/studenti/', gallery: '/gallery/' };
+            for (const key in viewUrlsRaw) { if (viewUrlsRaw[key] === clean) return key; }
             return null;
         }
 
@@ -1601,7 +1606,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function goToDept(deptId) {
             haptic(10);
             if (currentViewId !== 'board') {
-                goToUrl('/board/#' + deptId, 'board');
+                goToUrl(baseUrl + '/board/#' + deptId, 'board');
                 return;
             }
             const deptOrder = ['dept-cd', 'dept-hr', 'dept-pr', 'dept-fr', 'dept-ev'];
@@ -1823,7 +1828,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // folosesc același tipar de fișier ca și cardurile din pagină: assets/team/<nume-slug>.jpg
                     // (vezi slugifyName mai sus). Dacă poza chiar există acolo, apare și în search;
                     // dacă nu, onerror mai jos cade discret pe iconița generică.
-                    const photoSrc = item.photo || ((item.group === 'Board' || item.group === 'Facultate') ? `/assets/team/${slugifyName(item.title)}.jpg` : null);
+                    const photoSrc = item.photo || ((item.group === 'Board' || item.group === 'Facultate') ? `${baseUrl}/assets/team/${slugifyName(item.title)}.jpg` : null);
                     const iconHtml = photoSrc
                         ? `<div class="search-result-icon search-result-photo"><img src="${photoSrc}" alt="" loading="lazy" decoding="async"></div>`
                         : `<div class="search-result-icon"><i data-lucide="${item.icon}"></i></div>`;
@@ -1951,3 +1956,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 else if (e.key === 'Enter') { e.preventDefault(); if (activeIndex > -1) selectResult(activeIndex); }
             });
         })();
+
+// Initialize all Lucide icons on page load (including static footer, navbar, etc.)
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.lucide) lucide.createIcons();
+});
