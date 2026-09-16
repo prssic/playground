@@ -1,7 +1,7 @@
 title: SSIC
 description: "Societatea Studenților în Inginerie Chimică și Biotehnologii"
 url: "https://ssic.ro"
-baseurl: ""
+baseurl: "/playground"
 
 # Fără temă GitHub Pages implicită (jekyll-theme-primer etc.) — folosim propriul
 # layout (_layouts/default.html), scris integral de la zero, nu unul peste altul.
