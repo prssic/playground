@@ -30,4 +30,4 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="/assets/css/main.css"><script>window.siteData = { contacts: {{ site.data.contacts | jsonify }}, searchIndex: {{ site.data.search_index | jsonify }} };</script>
+    <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}"><script>window.siteData = { contacts: {{ site.data.contacts | jsonify }}, searchIndex: {{ site.data.search_index | jsonify }} };</script>
