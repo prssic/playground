@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ro">
+{% include head.html %}
+<body>
+
+    <!-- Confidențialitate: acest site nu colectează date despre vizitatori. Orice cookie tehnic
+         (dacă e vreodată setat, de ex. de un script extern) e șters automat la fiecare încărcare
+         a paginii, ca sesiunea să pornească mereu "curată". -->
+    <script>
+        (function clearAllCookiesOnInit() {
+            try {
+                document.cookie.split(';').forEach(function (c) {
+                    const name = c.split('=')[0].trim();
+                    if (!name) return;
+                    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + location.hostname + ';';
+                });
+            } catch (e) { /* ignorăm — unele browsere blochează accesul la document.cookie, ceea ce e oricum OK aici */ }
+        })();
+    </script>
+
+    <!-- Cinematic Noise & Cursor -->
+    <div class="noise"></div>
+    <div class="cursor" id="cursor"></div>
+
+    <!-- Bară de progres al scroll-ului -->
+    <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-fill" id="scrollProgressFill"></div></div>
+
+    <!-- Swipe Trans — "falsă" tranziție LTR/RTL între pagini reale (fiecare navigare
+         internă e acum un load de pagină nou, real; asta doar acoperă/descoperă ecranul
+         la ieșire/intrare, ca să pară o continuare a aceleiași animații, nu un salt sec).
+         Vezi goToUrl()/applySwipeEntrance() mai jos, în JS. -->
+    <div class="swipe-container" id="swiper">
+        <div class="swipe-bar"></div>
+        <div class="swipe-bar"></div>
+    </div>
+    <script>
+        // Rulează SINCRON, cât mai devreme posibil (înainte ca restul paginii să apuce să
+        // se vadă), ca bara să acopere ecranul din primul frame dacă tocmai am "sărit" aici
+        // dintr-o altă pagină a site-ului — altfel s-ar vedea un fulger al paginii noi
+        // înainte ca animația de descoperire să apuce să pornească.
+        (function () {
+            // Verificăm ambele surse de "animații reduse": preferința sistemului de operare
+            // ȘI comutatorul propriu al site-ului (salvat în localStorage) — dacă verificam
+            // doar media query-ul de sistem, un vizitator care activează opțiunea DOAR din
+            // panoul de accesibilitate tot vedea animația de swipe/acoperire rulând (CSS-ul
+            // de reduce-motion îi reducea durata la ~0, dar codul JS tot aștepta timeout-ul
+            // normal, deci rămânea ecranul plin, static, cu bara mov, cât timp dura acel
+            // timeout — exact reziduul raportat).
+            var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!reduceMotion) {
+                try {
+                    var storedPrefs = JSON.parse(localStorage.getItem('ssicA11yPrefs') || '{}');
+                    reduceMotion = !!storedPrefs.reduceMotion;
+                } catch (e) { /* ignorăm — rămânem la valoarea din media query */ }
+            }
+            var dir = null;
+            try { dir = sessionStorage.getItem('ssicSwipeDir'); sessionStorage.removeItem('ssicSwipeDir'); } catch (e) { /* ignorăm */ }
+            if (!dir || (dir !== 'ltr' && dir !== 'rtl') || reduceMotion) return;
+            var swiper = document.getElementById('swiper');
+            if (!swiper) return;
+            swiper.classList.add('swipe-' + dir, 'covered');
+            window.__ssicUncoverDir = dir;
+        })();
+    </script>
+
+    <!-- Nav (Frosted Glass) -->
+    {% include navbar.html %}
+
+    <!-- ================= SEARCH OVERLAY (Command Palette) ================= -->
+    {% include modals/search.html %}
+
+    <!-- ================= MODAL: CONTACT PERSOANĂ (Decan/Prodecani) ================= -->
+    {% include modals/contact.html %}
+
+    
+
+    <!-- SPA Root -->
+    <main class="app">
+{{ content }}
+    </main>
+
+    {% include footer.html %}
+
+    
+    <!-- Script oficial Instagram — procesează automat orice <blockquote class="instagram-media">
+         lipit în pagină (vezi instrucțiunile de lângă IG-EMBED-START, în secțiunea Acasă).
+         E nevoie o singură dată, indiferent de câte postări embedezi. -->
+    <script async src="https://www.instagram.com/embed.js"></script>
+    <!-- Notă privind cookie-urile: site-ul nu colectează date; orice cookie tehnic e șters
+         automat la fiecare inițializare (vezi scriptul din capul <body>).
+         Notificarea apare o singură dată per sesiune de navigare (nu la fiecare pagină
+         internă vizitată), via sessionStorage — care nu e "colectare de date" (nu pleacă
+         nicăieri, nu identifică vizitatorul, se șterge automat la închiderea tab-ului/
+         browserului), doar o bifă locală ca să nu vadă aceeași notificare la fiecare click
+         prin site. -->
+    {% include cookie-notice.html %}
+    
+    <!-- ==========================================================================
+         WIDGET ACCESIBILITATE — panou global (declanșat din butonul din footer),
+         lupă și bară de control pentru narator. Se randează o singură dată per
+         pagină; toate paginile SPA folosesc același panou. -->
+    {% include modals/a11y.html %}
+
+    
+
+    <!-- Randare inițială a tuturor iconițelor Lucide statice din pagină (search bar, footer,
+         calendar, cookie notice etc.). Cele generate ulterior dinamic (rezultate căutare, card
+         de contact) au propriul apel createIcons() chiar lângă locul unde sunt inserate.
+         Ascultăm DOMContentLoaded în loc să chemăm direct createIcons(): scriptul Lucide are
+         acum "defer" (vezi <head>), deci se execută abia după ce tot HTML-ul a fost parsat —
+         un apel direct, aici, ar fi rulat ÎNAINTE ca scriptul deferat să apuce să se execute,
+         și "lucide" ar fi fost încă undefined. DOMContentLoaded garantează ordinea corectă:
+         toate scripturile deferate (inclusiv Lucide) rulează înaintea acestui eveniment. -->
+    
+
+    <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+---
+layout: default
+view: evenimente
+permalink: /evenimente/
+title: Evenimente | SSIC
+---
+        <section class="view active" id="view-evenimente">
+            <div class="page-content">
+                <h1 class="title-huge"><i>Evenimente</i></h1>
+
+                <!-- Un singur rând de tab-uri: cele 3 evenimente + Calendar la final, în loc
+                     de rândul separat "Evenimente / Calendar" de deasupra (cerut explicit —
+                     "Calendar" nu mai are nevoie de propriul buton umbrelă, e doar încă o
+                     opțiune din aceeași bară orizontală). switchEventItem (mai jos) tratează
+                     ambele cazuri și ține panourile sincronizate. -->
+                <div class="horizontal-nav" id="nav-evenimente">
+                    <div class="horizontal-tab active hover-target" onclick="switchEventItem('event', 0, this)">Poli Chemistry Fest</div>
+                    <div class="horizontal-tab hover-target" onclick="switchEventItem('event', 1, this)">Poli Fest</div>
+                    <div class="horizontal-tab hover-target" onclick="switchEventItem('event', 2, this)">ChemEx</div>
+                    <div class="horizontal-tab hover-target" onclick="switchEventItem('calendar', null, this)">Calendar</div>
+                </div>
+
+                <!-- Poze evenimente: creează folderul assets/events/ lângă acest index.html și
+                     pune acolo poza pentru fiecare eveniment, denumită exact ca în src="..." de mai
+                     jos (ex. poli-chemistry-fest-1.jpg). Dacă un fișier lipsește, acel slide dispare
+                     automat din carusel (fără poză spartă vizibilă). -->
+                <div class="event-content-wrapper active" id="ev-0">
+                    <div class="event-desc reveal">
+                        <p>Poli Chemistry Fest este platforma unde inovațiile din chimie și biotehnologii prind viață. Aducem știința direct publicului larg printr-un maraton de demonstrații, interacțiuni cu cercetători de top și experimente avansate. Tinerii descoperă aici magia sintezei de noi materiale și a aplicațiilor din industria farma.</p>
+                    </div>
+                    <!-- Carusel Simplu Insta-Style (Fără gradient) -->
+                    <div class="carousel-container hover-target reveal">
+                        <div class="carousel-track" id="carousel-ev0">
+                            <div class="carousel-slide"><img src="assets/events/poli-chemistry-fest-1.jpg" alt="Poli Chemistry Fest 1" loading="lazy" decoding="async" onerror="handleEventImgError(this)"></div>
+                            <div class="carousel-slide"><img src="assets/events/poli-chemistry-fest-2.jpg" alt="Poli Chemistry Fest 2" loading="lazy" decoding="async" onerror="handleEventImgError(this)"></div>
+                        </div>
+                        <div class="carousel-dots" id="dots-ev0">
+                            <div class="carousel-dot active"></div>
+                            <div class="carousel-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-content-wrapper" id="ev-1">
+                    <div class="event-desc reveal">
+                        <p>Implicarea SSIC în Poli Fest subliniază dedicarea noastră de a reprezenta și de a promova ingineria la nivel universitar. Efortul combinat al departamentelor noastre creează standuri vizitate de mii de elevi și studenți, solidificând poziția noastră ca asociație pilon în cadrul universității.</p>
+                    </div>
+                    <div class="carousel-container hover-target reveal">
+                        <div class="carousel-track" id="carousel-ev1">
+                            <div class="carousel-slide"><img src="assets/events/poli-fest-1.jpg" alt="Poli Fest 1" loading="lazy" decoding="async" onerror="handleEventImgError(this)"></div>
+                            <div class="carousel-slide"><img src="assets/events/poli-fest-2.jpg" alt="Poli Fest 2" loading="lazy" decoding="async" onerror="handleEventImgError(this)"></div>
+                            <div class="carousel-slide"><img src="assets/events/poli-fest-3.jpg" alt="Poli Fest 3" loading="lazy" decoding="async" onerror="handleEventImgError(this)"></div>
+                        </div>
+                        <div class="carousel-dots" id="dots-ev1">
+                            <div class="carousel-dot active"></div>
+                            <div class="carousel-dot"></div>
+                            <div class="carousel-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-content-wrapper" id="ev-2">
+                    <div class="event-desc reveal">
+                        <p>ChemEx este proiectul flagship care redefinește dezvoltarea profesională a viitorilor chimiști. Schimburile de experiență, conferințele avansate, vizitele la unități de producție și networking-ul cu directorii tehnici facilitează o tranziție rapidă și de succes spre piața muncii.</p>
+                    </div>
+                    <div class="carousel-container hover-target reveal">
+                        <div class="carousel-track" id="carousel-ev2">
+                            <div class="carousel-slide"><img src="assets/events/chemex-1.jpg" alt="ChemEx 1" loading="lazy" decoding="async" onerror="handleEventImgError(this)"></div>
+                            <div class="carousel-slide"><img src="assets/events/chemex-2.jpg" alt="ChemEx 2" loading="lazy" decoding="async" onerror="handleEventImgError(this)"></div>
+                        </div>
+                        <div class="carousel-dots" id="dots-ev2">
+                            <div class="carousel-dot active"></div>
+                            <div class="carousel-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="evsub" id="evsub-calendar">
+                    <div class="calendar-section reveal">
+                        <h2><i data-lucide="calendar-days" style="color:var(--c-accent); margin-right:10px;"></i>Calendar</h2>
+                        <div class="calendar-list">
+                            <div class="calendar-item hover-target">
+                                <div class="calendar-date"><span class="cal-day">28</span><span class="cal-month">Sep</span></div>
+                                <div class="calendar-info">
+                                    <h3>DiscoverSSIC</h3>
+                                    <p>Detalii în curând</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /evsub-calendar -->
+
+            </div>
+            <footer class="global-footer"></footer>
+        </section>
+
+        <script>
+            // Înlocuiește vechea pereche switchEvent / switchEventSub (cele două rânduri de
+            // tab-uri separate: "Evenimente vs. Calendar" deasupra, "Poli Chemistry Fest /
+            // Poli Fest / ChemEx" dedesubt) cu UN singur rând, patru butoane, un singur
+            // sistem de comutare. Reutilizează swapTabPanel/haptic din layout (default.html),
+            // care rulează deja pe pagină — nu redefinim acea logică aici.
+            function switchEventItem(kind, index, el) {
+                if (el.classList.contains('active')) return;
+                if (typeof haptic === 'function') haptic(8);
+                document.querySelectorAll('#nav-evenimente .horizontal-tab').forEach(t => t.classList.remove('active'));
+                el.classList.add('active');
+
+                const panels = document.querySelectorAll('#view-evenimente .event-content-wrapper, #view-evenimente .evsub');
+                const nextId = kind === 'calendar' ? 'evsub-calendar' : `ev-${index}`;
+                const next = document.getElementById(nextId);
+                if (typeof swapTabPanel === 'function') swapTabPanel(panels, next);
+            }
+        </script>

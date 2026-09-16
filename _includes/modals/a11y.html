@@ -1,0 +1,91 @@
+<div class="a11y-overlay" id="a11yOverlay" role="dialog" aria-modal="true" aria-label="Opțiuni de accesibilitate">
+        <div class="a11y-panel">
+            <div class="a11y-panel-head">
+                <h3><i data-lucide="accessibility"></i> Accesibilitate</h3>
+                <button type="button" class="a11y-close-btn hover-target" id="a11yCloseBtn" aria-label="Închide">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="a11y-panel-body">
+                <p style="font-size:0.85rem; color:var(--c-gray); margin-bottom:4px;">Setările se salvează automat pe acest dispozitiv și se aplică pe toate paginile site-ului.</p>
+
+                <div class="a11y-group-label">Text</div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="type"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Mărime text</strong>
+                        <span>Mărește dimensiunea textului pe tot site-ul, în 3 trepte.</span>
+                    </div>
+                    <div class="a11y-stepper">
+                        <button type="button" class="a11y-step-btn hover-target" id="a11yTextDown" aria-label="Text mai mic">A−</button>
+                        <div class="a11y-step-dots" id="a11yTextDots" aria-hidden="true"><i></i><i></i><i></i></div>
+                        <button type="button" class="a11y-step-btn hover-target" id="a11yTextUp" aria-label="Text mai mare">A+</button>
+                    </div>
+                </div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="link-2"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Subliniere linkuri</strong>
+                        <span>Toate link-urile devin subliniate, nu doar colorate — util pentru daltonism.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchUnderline" role="switch" aria-checked="false" aria-label="Subliniere linkuri"></button>
+                </div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="book-open"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Font pentru dislexie</strong>
+                        <span>Comută pe un font conceput pentru dislexie, cu spațiere mărită între litere.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchDyslexia" role="switch" aria-checked="false" aria-label="Font pentru dislexie"></button>
+                </div>
+
+                <div class="a11y-group-label">Vizual</div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="contrast"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Contrast ridicat</strong>
+                        <span>Culori aproape alb-negru, cu accent auriu mai puternic, pentru lizibilitate maximă.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchContrast" role="switch" aria-checked="false" aria-label="Contrast ridicat"></button>
+                </div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="mouse-pointer-2"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Cursor nativ vizibil</strong>
+                        <span>Dezactivează cursorul custom animat și îl înlocuiește cu săgeata obișnuită a sistemului.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchCursor" role="switch" aria-checked="false" aria-label="Cursor nativ vizibil"></button>
+                </div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="zap-off"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Reducere animații</strong>
+                        <span>Oprește tranzițiile și animațiile decorative de pe site.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchMotion" role="switch" aria-checked="false" aria-label="Reducere animații"></button>
+                </div>
+
+                <div class="a11y-group-label">Auditiv</div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="volume-2"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Narator</strong>
+                        <span>Activează modul de citire: apasă pe orice text de pe pagină ca să fie citit cu voce tare.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchNarrator" role="switch" aria-checked="false" aria-label="Narator"></button>
+                </div>
+            </div>
+            <div class="a11y-panel-foot">
+                <span>Compatibil cu Ctrl/Cmd + tastatura.</span>
+                <button type="button" class="a11y-reset-btn hover-target" id="a11yResetBtn">
+                    <i data-lucide="rotate-ccw"></i> Resetează
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="a11y-narrator-bar" id="a11yNarratorBar">
+        <button type="button" id="a11yNarratorPlayPause" aria-label="Redă / pauză"><i data-lucide="pause"></i></button>
+        <span id="a11yNarratorLabel">Se citește...</span>
+        <button type="button" class="a11y-narrator-stop" id="a11yNarratorStop" aria-label="Oprește citirea"><i data-lucide="x"></i></button>
+    </div>

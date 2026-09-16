@@ -1,0 +1,22 @@
+title: SSIC
+description: "Societatea Studenților în Inginerie Chimică și Biotehnologii"
+url: "https://ssic.ro"
+baseurl: ""
+
+# Fără temă GitHub Pages implicită (jekyll-theme-primer etc.) — folosim propriul
+# layout (_layouts/default.html), scris integral de la zero, nu unul peste altul.
+theme: null
+
+# NU mai există niciun _includes/views/*.html și nici alt layout în afară de
+# default.html — asta a fost sursa erorii "stack level too deep" (probabil un
+# include care se referea, direct sau indirect, chiar la el însuși / la layout-ul
+# care îl includea). Structura nouă e simplă și fără recursivitate:
+#   fiecare pagină de nivel superior (index.html, evenimente.html, board.html, ...)
+#   are `layout: default` și e randată o singură dată, direct.
+
+exclude:
+  - README.md
+  - NOTES.md
+  - optimize-images.js
+  - package.json
+  - node_modules

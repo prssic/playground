@@ -1,0 +1,33 @@
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ page.title | default: "SSIC | Societatea Studenților în Inginerie Chimică și Biotehnologii" }}</title>
+
+    <!-- Lucide — iconițe de interfață cu linie fină, în locul Font Awesome-ului generic.
+         Elementele <i data-lucide="..."> de mai jos sunt convertite în <svg> inline de
+         lucide.createIcons(), apelat din DOMContentLoaded mai jos în <body> (nu mai devreme,
+         pentru că scriptul are acum "defer" — vezi motivul lângă atributul defer) și din nou,
+         punctual, de fiecare dată când apare conținut nou generat dinamic — vezi comentariile
+         din JS. Versiune fixată (0.469.0), nu "@latest": un update upstream nu trebuie să poată
+         schimba brusc iconițele sau să rupă ceva pe site fără preaviz, iar un URL cu versiune
+         fixă se cache-uiește mai bine decât "@latest". -->
+    <script src="https://unpkg.com/lucide@0.469.0" defer></script>
+    <!-- Leaflet + OpenStreetMap — hartă reală (pan/zoom, coordonate reale), nu o machetă
+         desenată. Nu necesită cheie API; tile-urile OSM sunt gratuite pentru trafic normal.
+         NU se încarcă static aici — CSS-ul și JS-ul Leaflet (~150KB împreună) sunt injectate
+         dinamic din loadLeaflet(), doar la primul click pe tab-ul "Hartă" din Studenți. Așa,
+         vizitatorii care nu deschid niciodată harta nu plătesc costul de rețea pentru ea.
+         Vezi loadLeaflet() + switchStudent() mai jos, în <body>. -->
+
+    <!-- Fonturi:
+         - Jost — geometric sans liber, folosit pt. text/paragrafe, cu suport complet pentru
+           diacriticele românești (ă, â, î, ș, ț).
+         - IBM Plex Sans — sans tehnic/corporate (creat de IBM, gândit pt. documentație
+           inginerească), folosit doar pt. titluri/h1-h4, ca să existe contrast real de
+           ierarhie față de Jost.
+         - Space Mono — folosit strict pt. cifrele mari de la countup-ul din hero, ca să dea
+           senzația de "citire de instrument", nu de landing page generic. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/assets/css/main.css"><script>window.siteData = { contacts: {{ site.data.contacts | jsonify }}, searchIndex: {{ site.data.search_index | jsonify }} };</script>
