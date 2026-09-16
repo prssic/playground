@@ -329,7 +329,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // mousemove reale. Pe desktop nu se schimbă nimic vizual sau de comportament.
         const supportsRealCursor = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
         if (supportsRealCursor) {
-            let mX = window.innerWidth/2, mY = window.innerHeight/2;
+            let savedX, savedY;
+            try { savedX = sessionStorage.getItem('ssicCursorX'); savedY = sessionStorage.getItem('ssicCursorY'); } catch(e){}
+            let mX = savedX ? parseFloat(savedX) : window.innerWidth/2;
+            let mY = savedY ? parseFloat(savedY) : window.innerHeight/2;
             let cX = mX, cY = mY;
 
             function loopCursor() {
@@ -341,6 +344,9 @@ document.addEventListener('DOMContentLoaded', () => {
             loopCursor();
 
             window.addEventListener('mousemove', e => { mX = e.clientX; mY = e.clientY; });
+            document.addEventListener('click', e => {
+                try { sessionStorage.setItem('ssicCursorX', e.clientX); sessionStorage.setItem('ssicCursorY', e.clientY); } catch(err){}
+            }, {capture: true});
         }
 
         /* Peste widget-ul Instagram (iframe încărcat de pe instagram.com), browserul nu mai
