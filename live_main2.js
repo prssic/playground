@@ -1668,7 +1668,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const delay = (i % 6) * 0.08;
                 // Caută automat assets/gallery/1.jpg, 2.jpg, ... 24.jpg. Dacă fișierul nu există,
                 // imaginea se șterge singură și rămâne iconița decorativă (fără poză spartă vizibil).
-                html += `<div class="gal-item hover-target reveal" style="--aspect: ${aspects[i]}; --r-delay: ${delay}s;"><img src="${baseUrl}/assets/gallery/${i + 1}.jpg" alt="Fotografie din galeria SSIC" loading="lazy" decoding="async" onerror="this.remove()"></div>`;
+                html += `<div class="gal-item hover-target reveal" style="--aspect: ${aspects[i]}; --r-delay: ${delay}s;"><img src="/assets/gallery/${i + 1}.jpg" alt="Fotografie din galeria SSIC" loading="lazy" decoding="async" onerror="this.remove()"></div>`;
             }
             galContainer.innerHTML = html;
             observeReveals();
@@ -1704,12 +1704,12 @@ document.addEventListener('DOMContentLoaded', () => {
             img.onerror = function () {
                 extIndex++;
                 if (extIndex < TEAM_PHOTO_EXTS.length) {
-                    img.src = `${baseUrl}/assets/team/${slug}.${TEAM_PHOTO_EXTS[extIndex]}`;
+                    img.src = `/assets/team/${slug}.${TEAM_PHOTO_EXTS[extIndex]}`;
                 } else {
                     img.remove();
                 }
             };
-            img.src = `${baseUrl}/assets/team/${slug}.${TEAM_PHOTO_EXTS[0]}`;
+            img.src = `/assets/team/${slug}.${TEAM_PHOTO_EXTS[0]}`;
             photoEl.appendChild(img);
         });
 

@@ -182,8 +182,8 @@
                        instant, cât timp video-ul se încarcă, și pe conexiuni foarte lente.
                     Dacă fișierul lipsește, video-ul dispare automat și rămâne gridul + gradientul din fundal (arată bine oricum).
                 -->
-                <video class="hero-video" id="heroVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" poster="{{ '/assets/video/hero-poster.jpg' | relative_url }}">
-                    <source src="{{ '/assets/video/hero-background.mp4' | relative_url }}" type="video/mp4">
+                <video class="hero-video" id="heroVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" poster="/playground/assets/video/hero-poster.jpg">
+                    <source src="/playground/assets/video/hero-background.mp4" type="video/mp4">
                 </video>
                 <div class="hero-grad"></div>
                 <div class="hero-content">
@@ -253,12 +253,7 @@
 
             </div>
 
-            {% include footer.html %}
-        </section>
-
-    </main>
-
-    <footer class="global-footer">
+            <footer class="global-footer">
 <div class="footer-grid">
                 <div class="ft-col">
                     <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
@@ -300,6 +295,11 @@
                 <span>Acest site nu colectează date personale ale vizitatorilor.</span>
             </div>
 </footer>
+        </section>
+
+    </main>
+
+    
 
     
     <!-- Script oficial Instagram — procesează automat orice <blockquote class="instagram-media">
