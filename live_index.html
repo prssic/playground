@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ro" data-baseurl="/playground" data-view="home">
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SSIC | Societatea Studenților în Inginerie Chimică și Biotehnologii</title>
+
+    <!-- Lucide — iconițe de interfață cu linie fină, în locul Font Awesome-ului generic.
+         Elementele <i data-lucide="..."> de mai jos sunt convertite în <svg> inline de
+         lucide.createIcons(), apelat din DOMContentLoaded mai jos în <body> (nu mai devreme,
+         pentru că scriptul are acum "defer" — vezi motivul lângă atributul defer) și din nou,
+         punctual, de fiecare dată când apare conținut nou generat dinamic — vezi comentariile
+         din JS. Versiune fixată (0.469.0), nu "@latest": un update upstream nu trebuie să poată
+         schimba brusc iconițele sau să rupă ceva pe site fără preaviz, iar un URL cu versiune
+         fixă se cache-uiește mai bine decât "@latest". -->
+    <script src="https://unpkg.com/lucide@0.469.0" defer></script>
+    <!-- Leaflet + OpenStreetMap — hartă reală (pan/zoom, coordonate reale), nu o machetă
+         desenată. Nu necesită cheie API; tile-urile OSM sunt gratuite pentru trafic normal.
+         NU se încarcă static aici — CSS-ul și JS-ul Leaflet (~150KB împreună) sunt injectate
+         dinamic din loadLeaflet(), doar la primul click pe tab-ul "Hartă" din Studenți. Așa,
+         vizitatorii care nu deschid niciodată harta nu plătesc costul de rețea pentru ea.
+         Vezi loadLeaflet() + switchStudent() mai jos, în <body>. -->
+
+    <!-- Fonturi:
+         - Jost — geometric sans liber, folosit pt. text/paragrafe, cu suport complet pentru
+           diacriticele românești (ă, â, î, ș, ț).
+         - IBM Plex Sans — sans tehnic/corporate (creat de IBM, gândit pt. documentație
+           inginerească), folosit doar pt. titluri/h1-h4, ca să existe contrast real de
+           ierarhie față de Jost.
+         - Space Mono — folosit strict pt. cifrele mari de la countup-ul din hero, ca să dea
+           senzația de "citire de instrument", nu de landing page generic. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/playground/assets/css/main.css"><script>window.siteData = { contacts: {"orbeci":{"role":"Decan","title":"Prof. dr. ing.","name":"Cristina Orbeci","email":"cristina.orbeci@upb.ro","phone":"+4 021 402 3822","office":"Str. Gheorghe Polizu, nr. 1-7, sector 1, București, corp C, sala 105","dept":"Departamentul de Chimie Analitică și Ingineria Mediului","personalUrl":"https://chimie.upb.ro/departamente/chimie-analitica-si-ingineria-mediului/colectiv/orbeci-cristina","photo":"https://chimie.upb.ro/administrare/content/img/personal/didactic/chimie-analitica-si-ingineria-mediului/orbeci-cristina/img.jpg"},"stoleriu":{"role":"Prodecan","title":"Prof. dr. ing.","name":"Ștefania Paula Stoleriu","email":"stefania.stoleriu@upb.ro","phone":"+4 021 402 3997","office":"Str. Gheorghe Polizu, nr. 1-7, sector 1, București, corp I, sala 026","dept":"Departamentul de Știința și Ingineria Materialelor Oxidice și Nanomateriale","personalUrl":"https://chimie.upb.ro/departamente/stiinta-si-ingineria-materialelor-oxidice-si-nanomaterialelor/colectiv/stoleriu-stefania-paula","photo":"https://chimie.upb.ro/administrare/content/img/personal/didactic/stiinta-si-ingineria-materialelor-oxidice-si-nanomaterialelor/stoleriu-stefania-paula/img.jpg"},"pirvu":{"role":"Prodecan","title":"Prof. dr. ing.","name":"Cristian Pîrvu","email":"cristian.pirvu@upb.ro","phone":"+4 021 402 3894","office":"Str. Gheorghe Polizu, nr. 1-7, sector 1, București, corp R, sala 024","dept":"Departamentul de Chimie Generală","personalUrl":"https://chimie.upb.ro/departamente/chimie-generala/colectiv/pirvu-cristian","photo":"https://chimie.upb.ro/administrare/content/img/personal/didactic/chimie-generala/pirvu-cristian/img.jpg"},"todasca":{"role":"Prodecan","title":"Ș. l. dr. ing.","name":"Maria Cristina Todașcă","email":"cristina.todasca@upb.ro","phone":"+4 021 402 3887","office":"Str. Gheorghe Polizu, nr. 1-7, sector 1, București, corp P, sala 014","dept":"Departamentul de Chimie Organică 'Costin Nenițescu'","personalUrl":"https://chimie.upb.ro/departamente/chimie-organica/colectiv/todasca-maria-cristina","photo":"https://chimie.upb.ro/administrare/content/img/personal/didactic/chimie-organica/todasca-maria-cristina/img.jpg"},"biru":{"role":"Prodecan","title":"Conf. dr. ing.","name":"Elena Iuliana Bîru","email":"iuliana.biru@upb.ro","phone":"+4 021 402 2703","office":"Str. Gheorghe Polizu, nr. 1-7, sector 1, București, corp A, sala 126","dept":"Departamentul de Bioresurse și Știința Polimerilor","personalUrl":"https://chimie.upb.ro/departamente/bioresurse-si-stiinta-polimerilor/colectiv/biru-elena-iuliana","photo":"https://chimie.upb.ro/administrare/content/img/personal/didactic/bioresurse-si-stiinta-polimerilor/biru-elena-iuliana/img.jpg"}}, searchIndex: [{"group":"Secțiuni","title":"Acasă","sub":"Pagina principală","icon":"house","view":"home"},{"group":"Secțiuni","title":"Evenimente","sub":"Proiectele SSIC","icon":"star","view":"evenimente"},{"group":"Secțiuni","title":"Structură Board","sub":"Echipa de conducere","icon":"users","view":"board"},{"group":"Secțiuni","title":"Reprezentare în Facultate","sub":"Conducere senatori consilieri","icon":"landmark","view":"facultate"},{"group":"Secțiuni","title":"Studenți: Cămine Tips & Hartă","sub":"Info cămine sfaturi practice hartă interactivă","icon":"graduation-cap","view":"studenti"},{"group":"Secțiuni","title":"Galerie","sub":"Poze din activități","icon":"image","view":"gallery"},{"group":"Evenimente","title":"Poli Chemistry Fest","sub":"Evenimente","icon":"flask-conical","view":"evenimente","eventIndex":0,"targetId":"ev-0"},{"group":"Evenimente","title":"Poli Fest","sub":"Evenimente","icon":"flask-conical","view":"evenimente","eventIndex":1,"targetId":"ev-1"},{"group":"Evenimente","title":"ChemEx","sub":"Evenimente","icon":"flask-conical","view":"evenimente","eventIndex":2,"targetId":"ev-2"},{"group":"Board","title":"Constantin Alexandru","sub":"Președinte · Consiliu Director","icon":"user","view":"board","deptId":"dept-cd"},{"group":"Board","title":"Soficaru David","sub":"Vicepreședinte · Consiliu Director","icon":"user","view":"board","deptId":"dept-cd"},{"group":"Board","title":"Vizireanu Andreea","sub":"Secretar General · Consiliu Director","icon":"user","view":"board","deptId":"dept-cd"},{"group":"Board","title":"Drăghici Sergiu","sub":"Director · HR","icon":"user","view":"board","deptId":"dept-hr"},{"group":"Board","title":"Tofan Ana","sub":"Coordonator Logistică · HR","icon":"user","view":"board","deptId":"dept-hr"},{"group":"Board","title":"Rusu Simon","sub":"Coordonator Resurse Umane · HR","icon":"user","view":"board","deptId":"dept-hr"},{"group":"Board","title":"Pătru Andrei","sub":"Director · PR","icon":"user","view":"board","deptId":"dept-pr"},{"group":"Board","title":"Leontescu Beatrice","sub":"Coordonator Grafică · PR","icon":"user","view":"board","deptId":"dept-pr"},{"group":"Board","title":"Brezeanu Mihai","sub":"Coordonator Social Media · PR","icon":"user","view":"board","deptId":"dept-pr"},{"group":"Board","title":"Petrescu Erica","sub":"Coordonator Text · PR","icon":"user","view":"board","deptId":"dept-pr"},{"group":"Board","title":"Avramov Stefan","sub":"Director · Fundraising","icon":"user","view":"board","deptId":"dept-fr"},{"group":"Board","title":"Nuramet Ener","sub":"Coordonator Finanțe · Fundraising","icon":"user","view":"board","deptId":"dept-fr"},{"group":"Board","title":"Diacon Cătălin","sub":"Coordonator Proiecte · Fundraising","icon":"user","view":"board","deptId":"dept-fr"},{"group":"Board","title":"Murakami Alina","sub":"Director · Evenimente","icon":"user","view":"board","deptId":"dept-ev"},{"group":"Facultate","title":"Orbeci Cristina","sub":"Decan · Conducerea Facultății","icon":"graduation-cap","view":"facultate","facDeptId":"fac-conducere","photo":"https: //chimie.upb.ro/administrare/content/img/personal/didactic/chimie-analitica-si-ingineria-mediului/orbeci-cristina/img.jpg","contactId":"orbeci"},{"group":"Facultate","title":"Stoleriu Ștefania Paula","sub":"Prodecan · Conducerea Facultății","icon":"graduation-cap","view":"facultate","facDeptId":"fac-conducere","photo":"https: //chimie.upb.ro/administrare/content/img/personal/didactic/stiinta-si-ingineria-materialelor-oxidice-si-nanomaterialelor/stoleriu-stefania-paula/img.jpg","contactId":"stoleriu"},{"group":"Facultate","title":"Pîrvu Cristian","sub":"Prodecan · Conducerea Facultății","icon":"graduation-cap","view":"facultate","facDeptId":"fac-conducere","photo":"https: //chimie.upb.ro/administrare/content/img/personal/didactic/chimie-generala/pirvu-cristian/img.jpg","contactId":"pirvu"},{"group":"Facultate","title":"Todașcă Maria Cristina","sub":"Prodecan · Conducerea Facultății","icon":"graduation-cap","view":"facultate","facDeptId":"fac-conducere","photo":"https: //chimie.upb.ro/administrare/content/img/personal/didactic/chimie-organica/todasca-maria-cristina/img.jpg","contactId":"todasca"},{"group":"Facultate","title":"Bîru Elena Iuliana","sub":"Prodecan · Conducerea Facultății","icon":"graduation-cap","view":"facultate","facDeptId":"fac-conducere","photo":"https: //chimie.upb.ro/administrare/content/img/personal/didactic/bioresurse-si-stiinta-polimerilor/biru-elena-iuliana/img.jpg","contactId":"biru"},{"group":"Facultate","title":"Constantin Alexandru","sub":"Senator · Senatul UPB","icon":"user","view":"facultate","facDeptId":"fac-senatori"},{"group":"Facultate","title":"Geană Maria Larisa","sub":"Senator · Senatul UPB","icon":"user","view":"facultate","facDeptId":"fac-senatori"},{"group":"Facultate","title":"Pătru Andrei","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"},{"group":"Facultate","title":"Catană Ariana","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"},{"group":"Facultate","title":"Drăghici Sergiu","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"},{"group":"Facultate","title":"El Beni Amina","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"},{"group":"Facultate","title":"Vizireanu Andreea","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"},{"group":"Facultate","title":"Nuramet Ener","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"},{"group":"Facultate","title":"Baicu Bianca","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"},{"group":"Facultate","title":"Petrescu Erica","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"},{"group":"Facultate","title":"Soficaru David","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"},{"group":"Facultate","title":"Petrici Anca","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"},{"group":"Facultate","title":"Rusu Simon","sub":"Consilier · Consiliul Facultății","icon":"user","view":"facultate","facDeptId":"fac-consilieri"}] };</script>
+
+<body>
+
+    <!-- Confidențialitate: acest site nu colectează date despre vizitatori. Orice cookie tehnic
+         (dacă e vreodată setat, de ex. de un script extern) e șters automat la fiecare încărcare
+         a paginii, ca sesiunea să pornească mereu "curată". -->
+    <script>
+        (function clearAllCookiesOnInit() {
+            try {
+                document.cookie.split(';').forEach(function (c) {
+                    const name = c.split('=')[0].trim();
+                    if (!name) return;
+                    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + location.hostname + ';';
+                });
+            } catch (e) { /* ignorăm — unele browsere blochează accesul la document.cookie, ceea ce e oricum OK aici */ }
+        })();
+    </script>
+
+    <!-- Cinematic Noise & Cursor -->
+    <div class="noise"></div>
+    <div class="cursor" id="cursor"></div>
+
+    <!-- Bară de progres al scroll-ului -->
+    <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-fill" id="scrollProgressFill"></div></div>
+
+    <!-- Swipe Trans — "falsă" tranziție LTR/RTL între pagini reale (fiecare navigare
+         internă e acum un load de pagină nou, real; asta doar acoperă/descoperă ecranul
+         la ieșire/intrare, ca să pară o continuare a aceleiași animații, nu un salt sec).
+         Vezi goToUrl()/applySwipeEntrance() mai jos, în JS. -->
+    <div class="swipe-container" id="swiper">
+        <div class="swipe-bar"></div>
+        <div class="swipe-bar"></div>
+    </div>
+    <script>
+        // Rulează SINCRON, cât mai devreme posibil (înainte ca restul paginii să apuce să
+        // se vadă), ca bara să acopere ecranul din primul frame dacă tocmai am "sărit" aici
+        // dintr-o altă pagină a site-ului — altfel s-ar vedea un fulger al paginii noi
+        // înainte ca animația de descoperire să apuce să pornească.
+        (function () {
+            // Verificăm ambele surse de "animații reduse": preferința sistemului de operare
+            // ȘI comutatorul propriu al site-ului (salvat în localStorage) — dacă verificam
+            // doar media query-ul de sistem, un vizitator care activează opțiunea DOAR din
+            // panoul de accesibilitate tot vedea animația de swipe/acoperire rulând (CSS-ul
+            // de reduce-motion îi reducea durata la ~0, dar codul JS tot aștepta timeout-ul
+            // normal, deci rămânea ecranul plin, static, cu bara mov, cât timp dura acel
+            // timeout — exact reziduul raportat).
+            var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!reduceMotion) {
+                try {
+                    var storedPrefs = JSON.parse(localStorage.getItem('ssicA11yPrefs') || '{}');
+                    reduceMotion = !!storedPrefs.reduceMotion;
+                } catch (e) { /* ignorăm — rămânem la valoarea din media query */ }
+            }
+            var dir = null;
+            try { dir = sessionStorage.getItem('ssicSwipeDir'); sessionStorage.removeItem('ssicSwipeDir'); } catch (e) { /* ignorăm */ }
+            if (!dir || (dir !== 'ltr' && dir !== 'rtl') || reduceMotion) return;
+            var swiper = document.getElementById('swiper');
+            if (!swiper) return;
+            swiper.classList.add('swipe-' + dir, 'covered');
+            window.__ssicUncoverDir = dir;
+        })();
+    </script>
+
+    <!-- Nav (Frosted Glass) -->
+    <nav>
+<div class="nav-backdrop" aria-hidden="true">
+            <div class="nav-glass-blur"></div>
+        </div>
+        <a class="logo hover-target" href="/playground/" style="text-decoration:none;">
+            <img src="/playground/assets/logo/ssic-logo.png" alt="SSIC - Societatea Studenților în Inginerie Chimică și Biotehnologii">
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a class="nav-link hover-target active" data-target="home" href="/playground/">Acasă</a></li>
+            <li><a class="nav-link hover-target" data-target="evenimente" href="/playground/evenimente/">Evenimente</a></li>
+            <li><a class="nav-link hover-target" data-target="board" href="/playground/board/">Board</a></li>
+            <li><a class="nav-link hover-target" data-target="facultate" href="/playground/facultate/">Facultate</a></li>
+            <li><a class="nav-link hover-target" data-target="studenti" href="/playground/studenti/">Studenți</a></li>
+            <li><a class="nav-link hover-target" data-target="gallery" href="/playground/gallery/">Galerie</a></li>
+        </ul>
+        <div class="nav-right">
+            <button class="nav-search-btn hover-target" id="navSearchBtn" aria-label="Caută în site" aria-haspopup="dialog" aria-expanded="false" aria-controls="searchOverlay">
+                <i data-lucide="search"></i>
+            </button>
+            <button class="nav-burger hover-target" id="navBurger" aria-label="Deschide meniul" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+</nav>
+
+    <!-- ================= SEARCH OVERLAY (Command Palette) ================= -->
+    <div class="search-overlay" id="searchOverlay" role="dialog" aria-modal="true" aria-label="Căutare în site">
+        <div class="search-panel">
+            <div class="search-input-row">
+                <i data-lucide="search" class="search-input-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Caută membri, evenimente, secțiuni…" autocomplete="off" spellcheck="false">
+                <button class="search-close-btn hover-target" id="searchCloseBtn" aria-label="Închide căutarea">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="search-results" id="searchResults"></div>
+            <div class="search-hint">
+                <span><kbd>↑</kbd><kbd>↓</kbd> navighează</span>
+                <span><kbd>Enter</kbd> selectează</span>
+                <span><kbd>Esc</kbd> închide</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: CONTACT PERSOANĂ (Decan/Prodecani) ================= -->
+    <div class="contact-overlay" id="contactOverlay" role="dialog" aria-modal="true" aria-labelledby="contactName">
+        <div class="contact-card">
+            <button class="contact-close-btn hover-target" id="contactCloseBtn" aria-label="Închide">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="contact-head">
+                <div class="contact-photo" id="contactPhoto"></div>
+                <div class="contact-head-overlay">
+                    <div class="contact-role" id="contactRole"></div>
+                    <h3 id="contactName"></h3>
+                    <div class="contact-title" id="contactTitle"></div>
+                </div>
+            </div>
+            <div class="contact-body">
+                <div class="contact-lines" id="contactLines"></div>
+                <a href="#" id="contactPersonalLink" class="contact-link hover-target" target="_blank" rel="noopener">
+                    Pagina personală UPB <i data-lucide="external-link"></i>
+                </a>
+            </div>
+            <div class="contact-scroll-hint" id="contactScrollHint" aria-hidden="true"><i data-lucide="chevron-down"></i></div>
+        </div>
+    </div>
+
+    
+
+    <!-- SPA Root -->
+    <main class="app">
+        <section class="view active" id="view-home">
+            
+            <div class="hero">
+                <!--
+                    VIDEO DE FUNDAL — pune fișierul tău aici:
+                    1. Creează folderul assets/video/ lângă acest index.html
+                    2. Exportă reel-ul din Instagram ca .mp4 (fără watermark, ideal <15MB pt. încărcare rapidă)
+                    3. Denumește-l exact "hero-background.mp4" și pune-l în assets/video/
+                    4. (Opțional) Un poster/thumbnail static "hero-poster.jpg" în același folder — se vede
+                       instant, cât timp video-ul se încarcă, și pe conexiuni foarte lente.
+                    Dacă fișierul lipsește, video-ul dispare automat și rămâne gridul + gradientul din fundal (arată bine oricum).
+                -->
+                <video class="hero-video" id="heroVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" poster="{{ '/assets/video/hero-poster.jpg' | relative_url }}">
+                    <source src="{{ '/assets/video/hero-background.mp4' | relative_url }}" type="video/mp4">
+                </video>
+                <div class="hero-grad"></div>
+                <div class="hero-content">
+                    <h1 class="title-huge">
+                        <span class="typed-line" aria-hidden="true"><span class="typed-text" id="heroTyped"></span><span class="typed-cursor" id="heroCursor"></span></span>
+                        <span class="sr-only">Inovație în Inginerie Chimică</span>
+                        <br><i>Inginerie Chimică</i>
+                    </h1>
+                </div>
+            </div>
+
+            <div class="home-extended-area">
+                
+                <div class="home-huge-stats" id="homeHugeStats">
+                    <!-- Generat din JS (vezi initHomeStats mai jos) — nu edita direct aici,
+                         adaugă/modifică intrări în array-ul STATS din JS. -->
+                </div>
+
+                <div class="home-about-extended">
+                    <div class="reveal">
+                        <h2>Cine suntem</h2>
+                        <p>Societatea Studenților în Inginerie Chimică și Biotehnologii (SSIC) este organizația studențească reprezentativă pentru studenții Facultății de Inginerie Chimică și Biotehnologii din cadrul Universității Politehnica din București. Înființată în anul 2023, din dorința de a sprijini și reprezenta interesele studenților, SSIC s-a afirmat ca un exemplu de implicare și profesionalism în rândul organizațiilor studențești.</p>
+                    </div>
+                    <div class="reveal" style="--r-delay:0.12s;">
+                        <h2>Misiunea noastră</h2>
+                        <p>Misiunea SSIC este de a sprijini dezvoltarea academică, profesională și personală a voluntarilor săi, prin cultivarea unui mediu activ, colaborativ și orientat spre excelență. Participarea constantă la evenimente precum PoliFest și PoliChemistryFest, alături de inițierea programului național de schimb de experiență ChemEx, reflectă angajamentul SSIC față de formarea continuă și implicarea comunitară.</p>
+                        <p>Cu activitate susținută și ambițioasă, SSIC contribuie activ la consolidarea unei comunități de tineri ingineri pasionați de știință, inovație și responsabilitate, capabili să dezvolte soluții sustenabile și relevante în domeniile ingineriei chimice și biotehnologiilor.</p>
+                    </div>
+                </div>
+
+                <!-- ==========================================================================
+                     ULTIMA POSTARE INSTAGRAM — Embed manual (fără API, fără cont de admin necesar)
+
+                     CUM ACTUALIZEZI (durează 30 de secunde, de fiecare dată când postați ceva nou):
+                       1. Deschide postarea dorită pe instagram.com (din browser, nu din aplicație).
+                       2. Click pe cele trei puncte "···" din colțul din dreapta sus al postării.
+                       3. Alege "Embed" (Încorporare).
+                       4. Copiază tot codul care apare (începe cu <blockquote class="instagram-media" ...>).
+                       5. Șterge blocul <blockquote> de mai jos (dintre marcajele START/END) și lipește
+                          codul nou copiat exact în locul lui. Nu șterge și scriptul embed.js de la
+                          finalul paginii — acela e nevoie o singură dată, procesează orice <blockquote>.
+                       6. Salvează fișierul. Gata — postarea reală apare, cu poză, like-uri și caption,
+                          exact ca pe Instagram.
+
+                     Până pui o postare reală, rămâne vizibil cardul de mai jos (linkul către profil). -->
+                <div class="instagram-embed-wrapper reveal" id="ig-embed-wrapper">
+                    <div class="ig-embed-eyebrow"><svg class="icon-brand" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg> Ultima postare</div>
+                    <div class="ig-embed-frame" id="igEmbedFrame">
+
+                    <!-- Loader temat (culorile site-ului), vizibil cât timp scriptul Instagram nu a
+                         înlocuit încă blockquote-ul de mai jos cu postarea reală. Elimină „flash-ul”
+                         alb, needimensionat corect, al placeholder-ului nativ Instagram. -->
+                    <div class="ig-embed-skeleton" id="igEmbedSkeleton">
+                        <svg class="icon-brand" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg>
+                        <span>Se încarcă postarea…</span>
+                        <a href="https://www.instagram.com/p/DcoXrGZDYgJ/" target="_blank" rel="noopener" class="ig-embed-fallback hover-target">
+                            Vezi pe Instagram <i data-lucide="external-link" style="font-size:0.8em;"></i>
+                        </a>
+                    </div>
+
+                    <!-- IG-EMBED-START — înlocuiește tot ce e între START și END cu codul copiat de la pasul 4 -->
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DcoXrGZDYgJ/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:400px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/p/DcoXrGZDYgJ/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">View this post on Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a><p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;"><a href="https://www.instagram.com/p/DcoXrGZDYgJ/?utm_source=ig_embed&amp;utm_campaign=loading" style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;" target="_blank">A post shared by SSIC (@ssic.upb)</a></p></div></blockquote>
+                    <!-- IG-EMBED-END -->
+
+                    </div>
+                </div>
+
+            </div>
+
+            {% include footer.html %}
+        </section>
+
+    </main>
+
+    <footer class="global-footer">
+<div class="footer-grid">
+                <div class="ft-col">
+                    <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
+                        <h4 style="margin-bottom:0;">SS<i style="color:var(--c-accent); font-style:normal;">IC</i> Upb</h4>
+                    </div>
+                    <p>Societatea Studenților în Inginerie Chimică și Biotehnologii.</p>
+                    <div class="social-icons">
+                        <a href="https://www.facebook.com/ssic.upb/" target="_blank" class="soc-icon hover-target" title="Facebook"><svg class="icon-brand" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/></svg></a>
+                        <a href="https://www.instagram.com/ssic.upb/" target="_blank" class="soc-icon hover-target" title="Instagram"><svg class="icon-brand" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg></a>
+                        <a href="https://www.linkedin.com/posts/ssicb_ficbi-ssic-activity-7123925339956781056-4ugv?originalSubdomain=ro" target="_blank" class="soc-icon hover-target" title="LinkedIn"><svg class="icon-brand" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/></svg></a>
+                        <a href="https://www.tiktok.com/@ssic.upb" target="_blank" class="soc-icon hover-target" title="TikTok"><svg class="icon-brand" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/></svg></a>
+                    </div>
+                </div>
+                <div class="ft-col">
+                    <h4>Locație</h4>
+                    <p>Strada Gheorghe Polizu 1-7, Campus Polizu, Corp L, sala L028, Sectorul 1, București, România</p>
+                    <div class="ft-links-row">
+                        <a href="mailto:ssic.upb@gmail.com" class="ft-mail hover-target"><i data-lucide="mail"></i> ssic.upb@gmail.com</a>
+                        <a href="https://chimie.upb.ro" target="_blank" rel="noopener" class="ft-mail hover-target"><i data-lucide="landmark"></i> Pagina Facultății</a>
+                    </div>
+                </div>
+                <div class="ft-col">
+                    <h4>Structură</h4>
+                    <p class="ft-dept-links">
+                        <a href="#board" class="hover-target" onclick="event.preventDefault(); goToDept('dept-cd');">Consiliu Director</a><span>·</span>
+                        <a href="#board" class="hover-target" onclick="event.preventDefault(); goToDept('dept-pr');">PR</a><span>·</span>
+                        <a href="#board" class="hover-target" onclick="event.preventDefault(); goToDept('dept-hr');">HR</a><span>·</span>
+                        <a href="#board" class="hover-target" onclick="event.preventDefault(); goToDept('dept-fr');">Fundraising</a><span>·</span>
+                        <a href="#board" class="hover-target" onclick="event.preventDefault(); goToDept('dept-ev');">Evenimente</a>
+                    </p>
+                    <button type="button" class="a11y-trigger hover-target" id="a11yTriggerBtn" title="Accesibilitate" aria-label="Deschide opțiunile de accesibilitate" aria-haspopup="dialog" aria-expanded="false" aria-controls="a11yOverlay">
+                        <i data-lucide="accessibility"></i>
+                        <span>Accesibilitate</span>
+                    </button>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 SSIC &mdash; Societatea Studenților în Inginerie Chimică și Biotehnologii. Toate drepturile rezervate.</span>
+                <span>Acest site nu colectează date personale ale vizitatorilor.</span>
+            </div>
+</footer>
+
+    
+    <!-- Script oficial Instagram — procesează automat orice <blockquote class="instagram-media">
+         lipit în pagină (vezi instrucțiunile de lângă IG-EMBED-START, în secțiunea Acasă).
+         E nevoie o singură dată, indiferent de câte postări embedezi. -->
+    <script async src="https://www.instagram.com/embed.js"></script>
+    <!-- Notă privind cookie-urile: site-ul nu colectează date; orice cookie tehnic e șters
+         automat la fiecare inițializare (vezi scriptul din capul <body>).
+         Notificarea apare o singură dată per sesiune de navigare (nu la fiecare pagină
+         internă vizitată), via sessionStorage — care nu e "colectare de date" (nu pleacă
+         nicăieri, nu identifică vizitatorul, se șterge automat la închiderea tab-ului/
+         browserului), doar o bifă locală ca să nu vadă aceeași notificare la fiecare click
+         prin site. -->
+    <div class="cookie-notice" id="cookieNotice" role="status" aria-live="polite">
+        <p>Acest site nu colectează date personale. Eventualele cookie-uri tehnice sunt șterse automat la fiecare vizită.</p>
+        <button type="button" class="cookie-notice-btn hover-target" id="cookieNoticeBtn">Am înțeles</button>
+    </div>
+    
+    <!-- ==========================================================================
+         WIDGET ACCESIBILITATE — panou global (declanșat din butonul din footer),
+         lupă și bară de control pentru narator. Se randează o singură dată per
+         pagină; toate paginile SPA folosesc același panou. -->
+    <div class="a11y-overlay" id="a11yOverlay" role="dialog" aria-modal="true" aria-label="Opțiuni de accesibilitate">
+        <div class="a11y-panel">
+            <div class="a11y-panel-head">
+                <h3><i data-lucide="accessibility"></i> Accesibilitate</h3>
+                <button type="button" class="a11y-close-btn hover-target" id="a11yCloseBtn" aria-label="Închide">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="a11y-panel-body">
+                <p style="font-size:0.85rem; color:var(--c-gray); margin-bottom:4px;">Setările se salvează automat pe acest dispozitiv și se aplică pe toate paginile site-ului.</p>
+
+                <div class="a11y-group-label">Text</div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="type"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Mărime text</strong>
+                        <span>Mărește dimensiunea textului pe tot site-ul, în 3 trepte.</span>
+                    </div>
+                    <div class="a11y-stepper">
+                        <button type="button" class="a11y-step-btn hover-target" id="a11yTextDown" aria-label="Text mai mic">A−</button>
+                        <div class="a11y-step-dots" id="a11yTextDots" aria-hidden="true"><i></i><i></i><i></i></div>
+                        <button type="button" class="a11y-step-btn hover-target" id="a11yTextUp" aria-label="Text mai mare">A+</button>
+                    </div>
+                </div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="link-2"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Subliniere linkuri</strong>
+                        <span>Toate link-urile devin subliniate, nu doar colorate — util pentru daltonism.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchUnderline" role="switch" aria-checked="false" aria-label="Subliniere linkuri"></button>
+                </div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="book-open"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Font pentru dislexie</strong>
+                        <span>Comută pe un font conceput pentru dislexie, cu spațiere mărită între litere.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchDyslexia" role="switch" aria-checked="false" aria-label="Font pentru dislexie"></button>
+                </div>
+
+                <div class="a11y-group-label">Vizual</div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="contrast"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Contrast ridicat</strong>
+                        <span>Culori aproape alb-negru, cu accent auriu mai puternic, pentru lizibilitate maximă.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchContrast" role="switch" aria-checked="false" aria-label="Contrast ridicat"></button>
+                </div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="mouse-pointer-2"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Cursor nativ vizibil</strong>
+                        <span>Dezactivează cursorul custom animat și îl înlocuiește cu săgeata obișnuită a sistemului.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchCursor" role="switch" aria-checked="false" aria-label="Cursor nativ vizibil"></button>
+                </div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="zap-off"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Reducere animații</strong>
+                        <span>Oprește tranzițiile și animațiile decorative de pe site.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchMotion" role="switch" aria-checked="false" aria-label="Reducere animații"></button>
+                </div>
+
+                <div class="a11y-group-label">Auditiv</div>
+                <div class="a11y-option">
+                    <div class="a11y-option-icon"><i data-lucide="volume-2"></i></div>
+                    <div class="a11y-option-text">
+                        <strong>Narator</strong>
+                        <span>Activează modul de citire: apasă pe orice text de pe pagină ca să fie citit cu voce tare.</span>
+                    </div>
+                    <button type="button" class="a11y-switch hover-target" id="a11ySwitchNarrator" role="switch" aria-checked="false" aria-label="Narator"></button>
+                </div>
+            </div>
+            <div class="a11y-panel-foot">
+                <span>Compatibil cu Ctrl/Cmd + tastatura.</span>
+                <button type="button" class="a11y-reset-btn hover-target" id="a11yResetBtn">
+                    <i data-lucide="rotate-ccw"></i> Resetează
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="a11y-narrator-bar" id="a11yNarratorBar">
+        <button type="button" id="a11yNarratorPlayPause" aria-label="Redă / pauză"><i data-lucide="pause"></i></button>
+        <span id="a11yNarratorLabel">Se citește...</span>
+        <button type="button" class="a11y-narrator-stop" id="a11yNarratorStop" aria-label="Oprește citirea"><i data-lucide="x"></i></button>
+    </div>
+
+    
+
+    <!-- Randare inițială a tuturor iconițelor Lucide statice din pagină (search bar, footer,
+         calendar, cookie notice etc.). Cele generate ulterior dinamic (rezultate căutare, card
+         de contact) au propriul apel createIcons() chiar lângă locul unde sunt inserate.
+         Ascultăm DOMContentLoaded în loc să chemăm direct createIcons(): scriptul Lucide are
+         acum "defer" (vezi <head>), deci se execută abia după ce tot HTML-ul a fost parsat —
+         un apel direct, aici, ar fi rulat ÎNAINTE ca scriptul deferat să apuce să se execute,
+         și "lucide" ar fi fost încă undefined. DOMContentLoaded garantează ordinea corectă:
+         toate scripturile deferate (inclusiv Lucide) rulează înaintea acestui eveniment. -->
+    
+
+    <script src="/playground/assets/js/main.js" defer></script>
+</body>
+</html>

@@ -16,8 +16,8 @@ title: SSIC | Societatea Studenților în Inginerie Chimică și Biotehnologii
                        instant, cât timp video-ul se încarcă, și pe conexiuni foarte lente.
                     Dacă fișierul lipsește, video-ul dispare automat și rămâne gridul + gradientul din fundal (arată bine oricum).
                 -->
-                <video class="hero-video" id="heroVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" poster="assets/video/hero-poster.jpg">
-                    <source src="assets/video/hero-background.mp4" type="video/mp4">
+                <video class="hero-video" id="heroVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" poster="{{ '/assets/video/hero-poster.jpg' | relative_url }}">
+                    <source src="{{ '/assets/video/hero-background.mp4' | relative_url }}" type="video/mp4">
                 </video>
                 <div class="hero-grad"></div>
                 <div class="hero-content">
@@ -87,5 +87,5 @@ title: SSIC | Societatea Studenților în Inginerie Chimică și Biotehnologii
 
             </div>
 
-            <footer class="global-footer"></footer>
+            {% include footer.html %}
         </section>
