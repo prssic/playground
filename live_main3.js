@@ -329,10 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // mousemove reale. Pe desktop nu se schimbă nimic vizual sau de comportament.
         const supportsRealCursor = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
         if (supportsRealCursor) {
-            let savedX, savedY;
-            try { savedX = sessionStorage.getItem('ssicCursorX'); savedY = sessionStorage.getItem('ssicCursorY'); } catch(e){}
-            let mX = savedX ? parseFloat(savedX) : window.innerWidth/2;
-            let mY = savedY ? parseFloat(savedY) : window.innerHeight/2;
+            let mX = window.innerWidth/2, mY = window.innerHeight/2;
             let cX = mX, cY = mY;
 
             function loopCursor() {
@@ -344,12 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
             loopCursor();
 
             window.addEventListener('mousemove', e => { mX = e.clientX; mY = e.clientY; });
-            document.addEventListener('click', e => {
-                try { sessionStorage.setItem('ssicCursorX', e.clientX); sessionStorage.setItem('ssicCursorY', e.clientY); } catch(err){}
-            }, {capture: true});
-            window.addEventListener('beforeunload', () => {
-                try { sessionStorage.setItem('ssicCursorX', mX); sessionStorage.setItem('ssicCursorY', mY); } catch(err){}
-            });
         }
 
         /* Peste widget-ul Instagram (iframe încărcat de pe instagram.com), browserul nu mai
@@ -1699,14 +1690,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // scoate diacriticele (ă, â, î, ș, ț)
                 .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         }
-        const TEAM_PHOTO_EXTS = ['jpg?v=1', 'jpeg?v=1', 'png?v=1'];
+        const TEAM_PHOTO_EXTS = ['jpg', 'jpeg', 'png'];
         document.querySelectorAll('.team-member').forEach(member => {
             const nameEl = member.querySelector('.team-name');
             const photoEl = member.querySelector('.team-photo');
             if (!nameEl || !photoEl) return;
-            // Daca deja contine o imagine, curatam (ca sa nu apara dubluri daca scriptul ruleaza de 2 ori cumva)
-            if (photoEl.innerHTML.trim() !== '') photoEl.innerHTML = '';
-            
             const slug = slugifyName(nameEl.textContent);
             const img = document.createElement('img');
             img.alt = nameEl.textContent.trim();
